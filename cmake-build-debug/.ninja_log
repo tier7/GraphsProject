@@ -1,0 +1,9 @@
+# ninja log v6
+17	76	7669506623054609	CMakeFiles/untitled.dir/Kruskal.cpp.obj	3d261538189a984e
+23	77	7669506623124618	CMakeFiles/untitled.dir/Edge.cpp.obj	5787d2d7d5351aea
+5	504	7669506622944587	CMakeFiles/untitled.dir/main.cpp.obj	e65229f6354a74e9
+13	519	7669506623024602	CMakeFiles/untitled.dir/ListGraph.cpp.obj	c085ca7fadfd405f
+24	68	7669507403901621	CMakeFiles/untitled.dir/Kruskal.cpp.obj	3d261538189a984e
+20	486	7669507403861613	CMakeFiles/untitled.dir/MatrixGraph.cpp.obj	93aaef012cb01f2e
+21	64	7669507581539022	CMakeFiles/untitled.dir/Sorter.cpp.obj	cd5ad78178d56709
+64	157	7669507581969120	untitled.exe	7888274e5c641155

@@ -7,4 +7,11 @@ add_executable(untitled main.cpp
         MatrixGraph.cpp
         MatrixGraph.h
         ListGraph.cpp
-        ListGraph.h)
+        ListGraph.h
+        Kruskal.cpp
+        Kruskal.h
+        Sorter.cpp
+        Sorter.h
+        Edge.cpp
+        Edge.h
+)

@@ -5,10 +5,10 @@
 #include "ListGraph.h"
 #include <iostream>
 
-struct Edge {
+struct ListEdge {
     int destination;
     int weight;
-    Edge *next;
+    Edge* next;
 };
 
 ListGraph::ListGraph(int v, GraphType t) {

@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+#include "Edge.h"
+
 MatrixGraph::MatrixGraph(int v, GraphType t) {
     vertices_count = v;
     graph_type = t;
@@ -53,6 +55,22 @@ void MatrixGraph::removeEdge(int a, int b) {
     }
 }
 
+Edge* MatrixGraph::getEdges(int &edgeCount) const {
+    edgeCount = 0;
+    Edge* edgeTab = new Edge[vertices_count*vertices_count];
+    for (int i = 0; i < vertices_count; i++) {
+        for (int j = 0; j < vertices_count; j++) {
+            if (matrix[i][j] != 0) {
+                edgeTab[edgeCount++] = {i,j,matrix[i][j]};
+            }
+        }
+    }
+    return edgeTab;
+}
+
+int MatrixGraph::getVerticesCount() const{
+    return vertices_count;
+}
 
 
 

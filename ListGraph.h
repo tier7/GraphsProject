@@ -4,7 +4,7 @@
 
 #ifndef LISTGRAPH_H
 #define LISTGRAPH_H
-
+#include "Edge.h"
 
 class ListGraph {
 public:
@@ -14,12 +14,12 @@ public:
     };
     ListGraph(int v, GraphType t);
     ~ListGraph();
-    void addEdge(int a, int b, int weight, int next);
+    void addEdge(int a, int b, int weight);
     void removeEdge(int a, int b);
     void print();
 
 private:
-    struct Edge {
+    struct ListEdge {
         int destination;
         int weight;
         Edge* next;

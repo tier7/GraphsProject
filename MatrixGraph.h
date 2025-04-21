@@ -4,7 +4,7 @@
 
 #ifndef MATRIXGRAPH_H
 #define MATRIXGRAPH_H
-
+#include "Edge.h"
 
 
 class MatrixGraph {
@@ -15,9 +15,12 @@ public:
     };
     MatrixGraph(int v, GraphType t);
     ~MatrixGraph();
-    void addEdge(int a, int b, GraphType t);
+    void addEdge(int a, int b, int weight);
     void removeEdge(int a, int b);
     void print();
+    Edge* getEdges(int &edgeCount) const;
+    int getVerticesCount() const;
+
 
 private:
     int** matrix;
