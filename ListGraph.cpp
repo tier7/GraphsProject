@@ -93,3 +93,26 @@ void ListGraph::removeEdge(int a, int b) {
         }
     }
 }
+Edge* ListGraph::getEdges(int &edgeCount) const {
+    edgeCount = 0;
+    Edge* edgeTab = new Edge[vertices_count*vertices_count];
+    for (int i = 0; i < vertices_count; i++) {
+        ListEdge *current_edge = list[i];
+        while (current_edge != nullptr) {
+            if (graph_type == UNDIRECTED && current_edge->destination > i) {
+                edgeTab[edgeCount] = {i, current_edge->destination, current_edge->weight};
+                edgeCount++;
+            }
+            else if (graph_type == DIRECTED) {
+                edgeTab[edgeCount] = {i, current_edge->destination, current_edge->weight};
+                edgeCount++;
+            }
+            current_edge = current_edge->next;
+
+        }
+
+    }
+    return edgeTab;
+}
+
+

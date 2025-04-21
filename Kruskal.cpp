@@ -3,6 +3,10 @@
 //
 
 #include "Kruskal.h"
+
+#include <iostream>
+#include <bits/ostream.tcc>
+
 #include "MatrixGraph.h"
 #include "Sorter.h"
 
@@ -35,6 +39,7 @@ int Kruskal::KruskalMatrix(const MatrixGraph &graph) {
 
     int edgeCount = 0;
     Edge* edges = graph.getEdges(edgeCount);
+    //Edge* MST = new Edge[edgeCount];
     sort(edges, edgeCount);
     int vertices_count = graph.getVerticesCount();
     int* rank = new int[vertices_count];
@@ -49,13 +54,21 @@ int Kruskal::KruskalMatrix(const MatrixGraph &graph) {
         int v = edges[i].destination;
         if (findUltParent(u, parent) != findUltParent(v, parent)) {
             unionByRank(u, v, rank, parent);
+            //MST[edgesMST] = {edges[i].from, edges[i].destination, edges[i].weight};
             weightSum += edges[i].weight;
             edgesMST ++;
         }
     }
+    /*for (int i = 0; i < edgesMST; i++) {
+        std::cout << MST[i].from << " " << MST[i].destination << " " << MST[i].weight << std::endl;
+    }*/
     delete[] parent;
     delete[] rank;
     delete[] edges;
     return weightSum;
+}
+
+int Kruskal::KruskalList(const MatrixGraph &graph) {
 
 }
+

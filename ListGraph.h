@@ -16,6 +16,7 @@ public:
     ~ListGraph();
     void addEdge(int a, int b, int weight);
     void removeEdge(int a, int b);
+    Edge *getEdges(int &edgeCount) const;
     void print();
 
 private:
