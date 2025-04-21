@@ -22,9 +22,9 @@ private:
     struct ListEdge {
         int destination;
         int weight;
-        Edge* next;
+        ListEdge* next;
     };
-    Edge** list;
+    ListEdge** list;
     int vertices_count;
     GraphType graph_type;
 };

@@ -8,8 +8,9 @@
 
 
 class Kruskal {
-    void KruskalMatrix(const MatrixGraph& graph);
-    void KruskalList(const MatrixGraph& graph);
+    public:
+    int KruskalMatrix(const MatrixGraph& graph);
+    int KruskalList(const MatrixGraph& graph);
 };
 
 

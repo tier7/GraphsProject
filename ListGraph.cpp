@@ -8,13 +8,13 @@
 struct ListEdge {
     int destination;
     int weight;
-    Edge* next;
+    ListEdge* next;
 };
 
 ListGraph::ListGraph(int v, GraphType t) {
     vertices_count = v;
     graph_type = t;
-    list = new Edge *[vertices_count];
+    list = new ListEdge *[vertices_count];
     for (int i = 0; i < vertices_count; i++) {
         list[i] = nullptr;
     }
@@ -22,7 +22,12 @@ ListGraph::ListGraph(int v, GraphType t) {
 
 ListGraph::~ListGraph() {
     for (int i = 0; i < vertices_count; i++) {
-        delete[] list[i];
+        ListEdge* curr_edge = list[i];
+        while (curr_edge != nullptr) {
+            ListEdge* del_edge = curr_edge;
+            curr_edge = curr_edge->next;
+            delete del_edge;
+        }
     }
     delete[] list;
 }
@@ -30,7 +35,7 @@ ListGraph::~ListGraph() {
 void ListGraph::print() {
     for (int i = 0; i < vertices_count; i++) {
         std::cout << i << ": ";
-        Edge *current_edge = list[i];
+        ListEdge *current_edge = list[i];
         while (current_edge != nullptr) {
             std::cout << current_edge->destination << "(" << current_edge->weight << ")->";
             current_edge = current_edge->next;
@@ -40,13 +45,13 @@ void ListGraph::print() {
 }
 
 void ListGraph::addEdge(int a, int b, int w) {
-    Edge *edge = new Edge;
+    ListEdge *edge = new ListEdge;
     edge->destination = b;
     edge->weight = w;
     edge->next = list[a];
     list[a] = edge;
     if (graph_type == UNDIRECTED) {
-        Edge *reverse_edge = new Edge;
+        ListEdge *reverse_edge = new ListEdge;
         reverse_edge->destination = a;
         reverse_edge->weight = w;
         reverse_edge->next = list[b];
@@ -55,8 +60,8 @@ void ListGraph::addEdge(int a, int b, int w) {
 }
 
 void ListGraph::removeEdge(int a, int b) {
-    Edge *current_edge = list[a];
-    Edge *prev_edge = nullptr;
+    ListEdge *current_edge = list[a];
+    ListEdge *prev_edge = nullptr;
     while (current_edge != nullptr) {
         if (current_edge->destination == b) {
             if (prev_edge == nullptr) {
@@ -72,8 +77,8 @@ void ListGraph::removeEdge(int a, int b) {
         current_edge = current_edge->next;
     }
     if (graph_type == UNDIRECTED) {
-        Edge *current_edge = list[b];
-        Edge *prev_edge = nullptr;
+        ListEdge *current_edge = list[b];
+        ListEdge *prev_edge = nullptr;
         while (current_edge != nullptr) {
             if (current_edge->destination == a) {
                 if (prev_edge == nullptr) {
