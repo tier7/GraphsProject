@@ -1,17 +1,31 @@
-cmake_minimum_required(VERSION 3.31)
-project(untitled)
+cmake_minimum_required(VERSION 3.30)
+project(GraphsProject)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(untitled main.cpp
+add_executable(GraphsProject
+        main.cpp
         MatrixGraph.cpp
-        MatrixGraph.h
-        ListGraph.cpp
-        ListGraph.h
         Kruskal.cpp
-        Kruskal.h
+        ListGraph.cpp
         Sorter.cpp
-        Sorter.h
-        Edge.cpp
-        Edge.h
+        GraphType.cpp
+        GraphType.h
+        GraphGenerator.cpp
+        GraphGenerator.h
+        IGraph.cpp
+        IGraph.h
+        Prim.h
+        Prim.cpp
+        TImer.cpp
+        TImer.h
+        FileHandler.cpp
+        FileHandler.h
+        Dijkstra.cpp
+        Dijkstra.h
+        BellmanFord.cpp
+        BellmanFord.h
+        MinHeap.cpp
+        MinHeap.h
+        ProblemType.h
 )

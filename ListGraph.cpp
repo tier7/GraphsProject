@@ -21,6 +21,7 @@ ListGraph::ListGraph(int v, GraphType t) {
 }
 
 ListGraph::~ListGraph() {
+    // kasowanie kazdej listy sasiedztwa
     for (int i = 0; i < vertices_count; i++) {
         ListEdge* curr_edge = list[i];
         while (curr_edge != nullptr) {
@@ -31,7 +32,7 @@ ListGraph::~ListGraph() {
     }
     delete[] list;
 }
-
+// wypisanie grafu
 void ListGraph::print() {
     for (int i = 0; i < vertices_count; i++) {
         std::cout << i << ": ";
@@ -43,7 +44,7 @@ void ListGraph::print() {
         std::cout << "nullptr\n";
     }
 }
-
+// dodanie nowej krawedzi do grafu
 void ListGraph::addEdge(int a, int b, int w) {
     ListEdge *edge = new ListEdge;
     edge->destination = b;
@@ -58,7 +59,7 @@ void ListGraph::addEdge(int a, int b, int w) {
         list[b] = reverse_edge;
     }
 }
-
+// usuwanie wybranej krawedzi
 void ListGraph::removeEdge(int a, int b) {
     ListEdge *current_edge = list[a];
     ListEdge *prev_edge = nullptr;
@@ -76,6 +77,7 @@ void ListGraph::removeEdge(int a, int b) {
         prev_edge = current_edge;
         current_edge = current_edge->next;
     }
+    // dla grafu nieskierowanego usunac tez w druga strone
     if (graph_type == UNDIRECTED) {
         ListEdge *current_edge = list[b];
         ListEdge *prev_edge = nullptr;
@@ -115,4 +117,49 @@ Edge* ListGraph::getEdges(int &edgeCount) const {
     return edgeTab;
 }
 
+int ListGraph::getVerticesCount() const{
+    return vertices_count;
+}
+
+GraphType ListGraph::getGraphType() const{
+    return graph_type;
+}
+
+int ListGraph::getWeight(int u, int v) const {
+    ListEdge* c = list[u];
+    int minWeight = INT_MAX;
+    bool found = false;
+    while (c != nullptr) {
+        if (c->destination == v) {
+            found = true;
+            if (minWeight > c->weight) {
+                minWeight = c->weight;
+            }
+        }
+        c = c->next;
+    }
+    if (found == true) {
+        return minWeight;
+    }
+    else {
+        return 0;
+    }
+}
+
+Edge* ListGraph::getNeighbours(int u, int& cnt) const {
+    cnt = 0;
+    ListEdge* curr = list[u];
+    while (curr != nullptr) {
+        cnt++;
+        curr = curr->next;
+    }
+
+    Edge* result = new Edge[cnt];
+    curr = list[u];
+    for (int i = 0; i < cnt; ++i) {
+        result[i] = {u, curr->destination, curr->weight};
+        curr = curr->next;
+    }
+    return result;
+}
 

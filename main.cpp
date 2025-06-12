@@ -1,17 +1,269 @@
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <climits>
+#include "MatrixGraph.h"
 #include "ListGraph.h"
+#include "GraphType.h"
+#include "GraphGenerator.h"
+#include "Prim.h"
 #include "Kruskal.h"
+#include "Dijkstra.h"
+#include "BellmanFord.h"
+#include "Timer.h"
+#include "FileHandler.h"
+#include <string.h>
+#include "ProblemType.h"
+
+void runTests() {
+    int sizes[7] = {400, 600, 800, 1000, 1200, 1400, 1600};
+    float densities[3] = {0.25f, 0.5f, 0.99f};
+    int nSizes = 7, nDensities = 3;
+    int reps = 50;
+    int minW = 1, maxW = 100;
+
+    std::ofstream csv("wyniki.csv");
+    csv << "algorytm,reprezentacja,rozmiar,gestosc,powtorzenie,czas(ms),koszt\n";
+    std::ofstream avgcsv("avgwyniki.csv");
+    avgcsv << "algorytm,reprezentacja,rozmiar,gestosc,sredni_czas(ms)\n";
+
+    for (int i = 0; i < nSizes; i++) {
+        int size = sizes[i];
+        for (int j = 0; j < nDensities; j++) {
+            float dens = densities[j];
+            double primMatrixSum = 0, primListSum = 0, kruskalMatrixSum = 0, kruskalListSum = 0;
+            double dijkstraMatrixSum = 0, dijkstraListSum = 0, bellmanMatrixSum = 0, bellmanListSum = 0;
+            for (int rep = 0; rep < reps; rep++) {
+                int maxE_MST = edgesCalculate(size, dens, UNDIRECTED);
+                int maxE_SP = edgesCalculate(size, dens, DIRECTED);
+                MatrixGraph matrixMST(size, maxE_MST, UNDIRECTED);
+                ListGraph listMST(size, UNDIRECTED);
+                generateGraph(matrixMST, dens, minW, maxW, UNDIRECTED);
+                generateGraph(listMST, dens, minW, maxW, UNDIRECTED);
+
+                Timer t1;
+                t1.start();
+                int cost1 = Prim(matrixMST);
+                double time1 = t1.end();
+                csv << "Prim,Matrix," << size << "," << dens << "," << rep << "," << time1 << "," << cost1 << "\n";
+                primMatrixSum += time1;
+
+                Timer t2;
+                t2.start();
+                int cost2 = Prim(listMST);
+                double time2 = t2.end();
+                csv << "Prim,List," << size << "," << dens << "," << rep << "," << time2 << "," << cost2 << "\n";
+                primListSum += time2;
+
+                Timer t3;
+                t3.start();
+                int cost3 = Kruskal(matrixMST);
+                double time3 = t3.end();
+                csv << "Kruskal,Matrix," << size << "," << dens << "," << rep << "," << time3 << "," << cost3 << "\n";
+                kruskalMatrixSum += time3;
+
+                Timer t4;
+                t4.start();
+                int cost4 = Kruskal(listMST);
+                double time4 = t4.end();
+                csv << "Kruskal,List," << size << "," << dens << "," << rep << "," << time4 << "," << cost4 << "\n";
+                kruskalListSum += time4;
+
+                MatrixGraph matrixSP(size, maxE_SP, DIRECTED);
+                ListGraph listSP(size, DIRECTED);
+                generateGraph(matrixSP, dens, minW, maxW, DIRECTED);
+                generateGraph(listSP, dens, minW, maxW, DIRECTED);
+
+                int start = rand() % size;
+
+
+                Timer t5;
+                t5.start();
+                int* dist5 = Dijkstra(matrixSP, start);
+                double time5 = t5.end();
+                int cost5 = 0;
+                for (int i = 0; i < size; ++i) {
+                    if (dist5[i] != INT_MAX) {
+                        cost5 += dist5[i];
+                    }
+                }
+                csv << "Dijkstra,Matrix," << size << "," << dens << "," << rep << "," << time5 << "," << cost5 << "\n";
+                delete[] dist5;
+                dijkstraMatrixSum += time5;
+
+                Timer t6;
+                t6.start();
+                int* dist6 = Dijkstra(listSP, start);
+                double time6 = t6.end();
+                int cost6 = 0;
+                for (int i = 0; i < size; ++i) {
+                    if (dist6[i] != INT_MAX) {
+                        cost6 += dist6[i];
+                    }
+                }
+                csv << "Dijkstra,List," << size << "," << dens << "," << rep << "," << time6 << "," << cost6 << "\n";
+                delete[] dist6;
+                dijkstraListSum += time6;
+
+                Timer t7;
+                t7.start();
+                int* dist7 = BellmanFord(matrixSP, start);
+                double time7 = t7.end();
+                int cost7 = 0;
+                for (int i = 0; i < size; ++i) {
+                    if (dist7[i] != INT_MAX) {
+                        cost7 += dist7[i];
+                    }
+                }
+                csv << "BellmanFord,Matrix," << size << "," << dens << "," << rep << "," << time7 << "," << cost7 << "\n";
+                delete[] dist7;
+                bellmanMatrixSum += time7;
+
+                Timer t8;
+                t8.start();
+                int* dist8 = BellmanFord(listSP, start);
+                double time8 = t8.end();
+                int cost8 = 0;
+                for (int i = 0; i < size; ++i) {
+                    if (dist8[i] != INT_MAX) {
+                        cost8 += dist8[i];
+                    }
+                }
+                csv << "BellmanFord,List," << size << "," << dens << "," << rep << "," << time8 << "," << cost8 << "\n";
+                delete[] dist8;
+                bellmanListSum += time8;
+            }
+            std::cout << "Zakonczono wykonywanie testu dla rozmiaru:" << size << " i gestosci=" << dens << std::endl;
+            avgcsv << "Prim,Matrix," << size << "," << dens << "," << (primMatrixSum / reps) << "\n";
+            avgcsv << "Prim,List," << size << "," << dens << "," << (primListSum / reps) << "\n";
+            avgcsv << "Kruskal,Matrix," << size << "," << dens << "," << (kruskalMatrixSum / reps) << "\n";
+            avgcsv << "Kruskal,List," << size << "," << dens << "," << (kruskalListSum / reps) << "\n";
+            avgcsv << "Dijkstra,Matrix," << size << "," << dens << "," << (dijkstraMatrixSum / reps) << "\n";
+            avgcsv << "Dijkstra,List," << size << "," << dens << "," << (dijkstraListSum / reps) << "\n";
+            avgcsv << "BellmanFord,Matrix," << size << "," << dens << "," << (bellmanMatrixSum / reps) << "\n";
+            avgcsv << "BellmanFord,List," << size << "," << dens << "," << (bellmanListSum / reps) << "\n";
+        }
+    }
+    csv.close();
+    std::cout << "\nZakonczono testy - wyniki w pliku wyniki.csv\n";
+    std::cout << "\nUsrednione wyniki w pliku avgwyniki.csv\n";
+
+}
+
+void fileMode(const std::string& configFile) {
+    ProblemType gProblem = MST;
+    std::ifstream fin(configFile);
+    if (!fin.is_open()) {
+        std::cerr << "Cannot open file: " << configFile << std::endl;
+        return;
+    }
+
+    IGraph* graph = nullptr;
+    std::string line;
+    while (getline(fin, line)) {
+        if (line.empty()) {
+            continue;
+        }
+        std::istringstream iss(line);
+        std::string cmd;
+        iss >> cmd;
+
+        if (cmd == "problem") {
+            std::string p; iss >> p;
+            if (p == "MST") gProblem = MST;
+            else if (p == "SP") gProblem = SP;
+            else std::cerr << "unknown problem\n";
+            continue;
+        }
+
+        if (cmd == "random") {
+            int V, minW, maxW;
+            float dens;
+            std::string repr;
+            iss >> V >> dens >> minW >> maxW >> repr;
+            delete graph;
+            GraphType gType = (gProblem == MST ? UNDIRECTED : DIRECTED);
+            if (repr == "matrix") {
+                int maxE = edgesCalculate(V, dens, gType);
+                graph = new MatrixGraph(V, maxE, gType);
+                generateGraph(*graph, dens, minW, maxW, gType);
+            } else if (repr == "list") {
+                graph = new ListGraph(V, gType);
+                generateGraph(*graph, dens, minW, maxW, gType);
+            }
+            std::cout << "generated graph (" << V << " nodes and " << dens << " density)\n";
+        }
+
+        else if (cmd == "file") {
+            std::string fname, repr;
+            iss >> fname >> repr;
+            delete graph;
+            GraphType gType = (gProblem == MST ? UNDIRECTED : DIRECTED);
+            if (repr == "matrix") {
+                graph = FileHandler::loadMatrixGraphFromFile(fname, gType);
+            }
+            else if (repr == "list") {
+                graph = FileHandler::loadListGraphFromFile(fname, gType);
+            }
+            if (graph) std::cout << "loaded graph from file " << fname << "\n";
+            else std::cerr << "error with loading from file\n";
+        }
+
+        else if (cmd == "show") {
+            if (graph) graph->print();
+            else std::cerr << "graph doesn't exist\n";
+        }
+
+        else if (cmd == "prim") {
+            if (!graph) { std::cerr << "graph doesn't exist\n"; continue; }
+            if (graph->getGraphType() == DIRECTED) { std::cerr << "wrong graph type\n"; continue; }
+            std::cout << "Prim: " << Prim(*graph) << "\n";
+        }
+
+        else if (cmd == "kruskal") {
+            if (!graph) { std::cerr << "graph doesn't exist\n"; continue; }
+            if (graph->getGraphType() == DIRECTED) { std::cerr << "wrong graph type\n"; continue; }
+            std::cout << "Kruskal: " << Kruskal(*graph) << "\n";
+        }
+
+        else if (cmd == "dijkstra") {
+            int start; iss >> start;
+            if (graph) {
+                int* dist = Dijkstra(*graph, start);
+                int n = graph->getVerticesCount();
+                for (int i = 0; i < n; ++i) std::cout << "Koszt do " << i << ": " << dist[i] << "\n";
+                delete[] dist;
+            } else std::cerr << "graph doesn't exist\n";
+        }
+
+        else if (cmd == "bellman") {
+            int start; iss >> start;
+            if (!graph) { std::cerr << "graph doesn't exist\n"; continue; }
+            if (graph->getGraphType() == UNDIRECTED) { std::cerr << "wrong graph type\n"; continue; }
+            int* dist = BellmanFord(*graph, start);
+            int n = graph->getVerticesCount();
+            for (int i = 0; i < n; ++i) std::cout << "Koszt do " << i << ": " << dist[i] << "\n";
+            delete[] dist;
+        }
+    }
+    delete graph;
+}
 
 int main() {
-    MatrixGraph g(7, MatrixGraph::UNDIRECTED);
-    g.addEdge(0, 1, 4);
-    g.addEdge(0, 2, 3);
-    g.addEdge(1, 2, 1);
-    g.addEdge(1, 3, 2);
-    g.addEdge(2, 3, 4);
-    g.addEdge(3, 4, 2);
-    g.addEdge(4, 5, 6);
-    Kruskal k;
-    std::cout<<k.KruskalMatrix(g)<<std::endl;
-    g.print();
+    std::srand(static_cast<unsigned>(std::time(nullptr)));
+    while (true) {
+        std::cout << "1. Test algorytmow\n";
+        std::cout << "2. Testowanie z pliku\n";
+        std::cout << "0. Exit\n";
+        int opt; std::cin >> opt;
+        if (opt == 0) break;
+        else if (opt == 1) runTests();
+        else if (opt == 2) {
+            std::string fname;
+            std::cout << "nazwa pliku konfiguracyjnego: ";
+            std::cin >> fname;
+            fileMode(fname);
+        }
+    }
+    return 0;
 }

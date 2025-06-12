@@ -4,14 +4,12 @@
 
 #ifndef KRUSKAL_H
 #define KRUSKAL_H
-#include "MatrixGraph.h"
+
+#include "IGraph.h"
 
 
-class Kruskal {
-    public:
-    int KruskalMatrix(const MatrixGraph& graph);
-    int KruskalList(const MatrixGraph& graph);
-};
+int Kruskal(const IGraph& graph);
+
 
 
 

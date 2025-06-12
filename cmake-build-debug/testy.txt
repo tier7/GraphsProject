@@ -1,0 +1,19 @@
+problem MST
+file filegraph.txt matrix
+show
+prim
+kruskal
+
+problem SP
+file filegraph.txt list
+dijkstra 2
+bellman 2
+
+
+problem MST
+random 6 0.4 1 10 list
+show
+prim
+kruskal
+
+

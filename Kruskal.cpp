@@ -5,9 +5,8 @@
 #include "Kruskal.h"
 
 #include <iostream>
-#include <bits/ostream.tcc>
-
 #include "MatrixGraph.h"
+#include "ListGraph.h"
 #include "Sorter.h"
 
 int findUltParent(int node, int* parent) {
@@ -17,12 +16,14 @@ int findUltParent(int node, int* parent) {
     return parent[node] = findUltParent(parent[node], parent);
 }
 
+// laczenie dwoch zbiorow
 void unionByRank(int node1, int node2, int* rank, int* parent) {
     int uParent_node1 = findUltParent(node1, parent);
     int uParent_node2 = findUltParent(node2, parent);
     if (uParent_node1 == uParent_node2) {
         return;
     }
+    // dodawanie mniejszego zbioru do wiekszego
     if (rank[uParent_node1] > rank[uParent_node2]) {
         parent[uParent_node2] = uParent_node1;
     }
@@ -35,12 +36,11 @@ void unionByRank(int node1, int node2, int* rank, int* parent) {
     }
 }
 
-int Kruskal::KruskalMatrix(const MatrixGraph &graph) {
+int Kruskal(const IGraph &graph) {
 
     int edgeCount = 0;
     Edge* edges = graph.getEdges(edgeCount);
-    //Edge* MST = new Edge[edgeCount];
-    sort(edges, edgeCount);
+    sort(edges, edgeCount); // sortowanie rosnaco wedlug wag
     int vertices_count = graph.getVerticesCount();
     int* rank = new int[vertices_count];
     int* parent = new int[vertices_count];
@@ -49,26 +49,26 @@ int Kruskal::KruskalMatrix(const MatrixGraph &graph) {
         parent[i] = i;
     }
     int weightSum = 0, edgesMST = 0;
+    // przejscie po krawedziach jezeli u i v sa w innych zbiorach - dolaczamy
     for (int i = 0; i < edgeCount; i++) {
         int u = edges[i].from;
         int v = edges[i].destination;
         if (findUltParent(u, parent) != findUltParent(v, parent)) {
             unionByRank(u, v, rank, parent);
-            //MST[edgesMST] = {edges[i].from, edges[i].destination, edges[i].weight};
             weightSum += edges[i].weight;
             edgesMST ++;
         }
     }
-    /*for (int i = 0; i < edgesMST; i++) {
-        std::cout << MST[i].from << " " << MST[i].destination << " " << MST[i].weight << std::endl;
-    }*/
+    // niespojny graf
+    if (edgesMST < vertices_count-1) {
+        weightSum = -1;
+    }
+
     delete[] parent;
     delete[] rank;
     delete[] edges;
     return weightSum;
 }
 
-int Kruskal::KruskalList(const MatrixGraph &graph) {
 
-}
 

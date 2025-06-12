@@ -8,9 +8,9 @@
 
 
 struct Edge {
-    int from;
-    int destination;
-    int weight;
+    int from; //wierzcholek poczatkwoy
+    int destination; //wierzcholek koncowy
+    int weight; //waga
 };
 
 
