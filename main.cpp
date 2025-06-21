@@ -16,14 +16,14 @@
 #include "ProblemType.h"
 
 void runTests() {
-    int sizes[7] = {400, 600, 800, 1000, 1200, 1400, 1600};
+    int sizes[7] = {400,500,600,700,800,900,1000};
     float densities[3] = {0.25f, 0.5f, 0.99f};
     int nSizes = 7, nDensities = 3;
     int reps = 50;
     int minW = 1, maxW = 100;
-
+    const int INF = INT_MAX / 4;
     std::ofstream csv("wyniki.csv");
-    csv << "algorytm,reprezentacja,rozmiar,gestosc,powtorzenie,czas(ms),koszt\n";
+    csv << "powtorzenie,algorytm,reprezentacja,rozmiar,gestosc,czas(ms),koszt\n";
     std::ofstream avgcsv("avgwyniki.csv");
     avgcsv << "algorytm,reprezentacja,rozmiar,gestosc,sredni_czas(ms)\n";
 
@@ -39,55 +39,63 @@ void runTests() {
                 MatrixGraph matrixMST(size, maxE_MST, UNDIRECTED);
                 ListGraph listMST(size, UNDIRECTED);
                 generateGraph(matrixMST, dens, minW, maxW, UNDIRECTED);
-                generateGraph(listMST, dens, minW, maxW, UNDIRECTED);
+                // tworzenie kopii grafu w formie listowej
+                int edgCountMST;
+                Edge* edgesMST = matrixMST.getEdges(edgCountMST);
+                for (int v = 0; v < edgCountMST; v++)
+                    listMST.addEdge(edgesMST[v].from, edgesMST[v].destination, edgesMST[v].weight);
+                delete[] edgesMST;
 
                 Timer t1;
                 t1.start();
                 int cost1 = Prim(matrixMST);
                 double time1 = t1.end();
-                csv << "Prim,Matrix," << size << "," << dens << "," << rep << "," << time1 << "," << cost1 << "\n";
+                csv << rep << ",Prim,Matrix," << size << "," << dens << "," << time1 << "," << cost1 << "\n";
                 primMatrixSum += time1;
 
                 Timer t2;
                 t2.start();
                 int cost2 = Prim(listMST);
                 double time2 = t2.end();
-                csv << "Prim,List," << size << "," << dens << "," << rep << "," << time2 << "," << cost2 << "\n";
+                csv << rep << ",Prim,List," << size << "," << dens << "," << time2 << "," << cost2 << "\n";
                 primListSum += time2;
 
                 Timer t3;
                 t3.start();
                 int cost3 = Kruskal(matrixMST);
                 double time3 = t3.end();
-                csv << "Kruskal,Matrix," << size << "," << dens << "," << rep << "," << time3 << "," << cost3 << "\n";
+                csv << rep << ",Kruskal,Matrix," << size << "," << dens << "," << time3 << "," << cost3 << "\n";
                 kruskalMatrixSum += time3;
 
                 Timer t4;
                 t4.start();
                 int cost4 = Kruskal(listMST);
                 double time4 = t4.end();
-                csv << "Kruskal,List," << size << "," << dens << "," << rep << "," << time4 << "," << cost4 << "\n";
+                csv << rep << ",Kruskal,List," << size << "," << dens << "," << time4 << "," << cost4 << "\n";
                 kruskalListSum += time4;
 
                 MatrixGraph matrixSP(size, maxE_SP, DIRECTED);
                 ListGraph listSP(size, DIRECTED);
                 generateGraph(matrixSP, dens, minW, maxW, DIRECTED);
-                generateGraph(listSP, dens, minW, maxW, DIRECTED);
+                // tworzenie kopii grafu w formie listowej
+                int edgCountSP;
+                Edge* edgesSP = matrixSP.getEdges(edgCountSP);
+                for (int v = 0; v < edgCountSP; v++)
+                    listSP.addEdge(edgesSP[v].from, edgesSP[v].destination, edgesSP[v].weight);
+                delete[] edgesSP;
 
                 int start = rand() % size;
-
-
                 Timer t5;
                 t5.start();
                 int* dist5 = Dijkstra(matrixSP, start);
                 double time5 = t5.end();
-                int cost5 = 0;
-                for (int i = 0; i < size; ++i) {
-                    if (dist5[i] != INT_MAX) {
-                        cost5 += dist5[i];
+                long long cost5 = 0;
+                for (int k = 0; k < size; ++k) {
+                    if (dist5[k] != INF) {
+                        cost5 += dist5[k];
                     }
                 }
-                csv << "Dijkstra,Matrix," << size << "," << dens << "," << rep << "," << time5 << "," << cost5 << "\n";
+                csv << rep << ",Dijkstra,Matrix," << size << "," << dens << "," << time5 << "," << cost5 << "\n";
                 delete[] dist5;
                 dijkstraMatrixSum += time5;
 
@@ -95,13 +103,13 @@ void runTests() {
                 t6.start();
                 int* dist6 = Dijkstra(listSP, start);
                 double time6 = t6.end();
-                int cost6 = 0;
-                for (int i = 0; i < size; ++i) {
-                    if (dist6[i] != INT_MAX) {
-                        cost6 += dist6[i];
+                long long cost6 = 0;
+                for (int k = 0; k < size; ++k) {
+                    if (dist6[k] != INF) {
+                        cost6 += dist6[k];
                     }
                 }
-                csv << "Dijkstra,List," << size << "," << dens << "," << rep << "," << time6 << "," << cost6 << "\n";
+                csv << rep << ",Dijkstra,List," << size << "," << dens << "," << time6 << "," << cost6 << "\n";
                 delete[] dist6;
                 dijkstraListSum += time6;
 
@@ -109,13 +117,13 @@ void runTests() {
                 t7.start();
                 int* dist7 = BellmanFord(matrixSP, start);
                 double time7 = t7.end();
-                int cost7 = 0;
-                for (int i = 0; i < size; ++i) {
-                    if (dist7[i] != INT_MAX) {
-                        cost7 += dist7[i];
+                long long cost7 = 0;
+                for (int k = 0; k < size; ++k) {
+                    if (dist7[k] != INF) {
+                        cost7 += dist7[k];
                     }
                 }
-                csv << "BellmanFord,Matrix," << size << "," << dens << "," << rep << "," << time7 << "," << cost7 << "\n";
+                csv << rep << ",BellmanFord,Matrix," << size << "," << dens << "," << time7 << "," << cost7 << "\n";
                 delete[] dist7;
                 bellmanMatrixSum += time7;
 
@@ -123,13 +131,13 @@ void runTests() {
                 t8.start();
                 int* dist8 = BellmanFord(listSP, start);
                 double time8 = t8.end();
-                int cost8 = 0;
-                for (int i = 0; i < size; ++i) {
-                    if (dist8[i] != INT_MAX) {
-                        cost8 += dist8[i];
+                long long cost8 = 0;
+                for (int k = 0; k < size; ++k) {
+                    if (dist8[k] != INF) {
+                        cost8 += dist8[k];
                     }
                 }
-                csv << "BellmanFord,List," << size << "," << dens << "," << rep << "," << time8 << "," << cost8 << "\n";
+                csv << rep << ",BellmanFord,List," << size << "," << dens << "," << time8 << "," << cost8 << "\n";
                 delete[] dist8;
                 bellmanListSum += time8;
             }
@@ -145,11 +153,9 @@ void runTests() {
         }
     }
     csv.close();
-    std::cout << "\nZakonczono testy - wyniki w pliku wyniki.csv\n";
-    std::cout << "\nUsrednione wyniki w pliku avgwyniki.csv\n";
-
+    std::cout << "Zakonczono testy - wyniki w pliku wyniki.csv\n";
+    std::cout << "Usrednione wyniki w pliku avgwyniki.csv\n";
 }
-
 void fileMode(const std::string& configFile) {
     ProblemType gProblem = MST;
     std::ifstream fin(configFile);

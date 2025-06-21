@@ -1,0 +1,3 @@
+"C:\Program Files\JetBrains\CLion 2025.1\bin\cmake\win\x64\bin\cmake.exe" -E rm -f CMakeFiles\GraphsProject.dir/objects.a
+C:\PROGRA~1\JETBRA~1\CLION2~1.1\bin\mingw\bin\ar.exe qc CMakeFiles\GraphsProject.dir/objects.a @CMakeFiles\GraphsProject.dir\objects1.rsp
+C:\PROGRA~1\JETBRA~1\CLION2~1.1\bin\mingw\bin\G__~1.EXE -g -Wl,--whole-archive CMakeFiles\GraphsProject.dir/objects.a -Wl,--no-whole-archive -o GraphsProject.exe -Wl,--out-implib,libGraphsProject.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\GraphsProject.dir\linkLibs.rsp

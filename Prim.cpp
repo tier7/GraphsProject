@@ -20,8 +20,8 @@ int Prim(const IGraph& graph)
 
     key[0] = 0;
 
-    int roughCap = vertexCount * vertexCount;
-    MinHeap heap(roughCap);
+    int heapCap = vertexCount * 2;
+    MinHeap heap(heapCap, vertexCount);
     heap.push(0, 0);
 
     int totalWeight = 0;
@@ -32,6 +32,7 @@ int Prim(const IGraph& graph)
         if (inTree[u]) {
             continue;
         }
+
         inTree[u] = true;
         totalWeight = totalWeight + node.key;
 

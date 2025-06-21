@@ -11,11 +11,13 @@ struct ListEdge {
     ListEdge* next;
 };
 
+
 ListGraph::ListGraph(int v, GraphType t) {
     vertices_count = v;
     graph_type = t;
-    list = new ListEdge *[vertices_count];
-    for (int i = 0; i < vertices_count; i++) {
+    edges_count = 0;
+    list = new ListEdge*[vertices_count];
+    for (int i = 0; i < vertices_count; ++i) {
         list[i] = nullptr;
     }
 }
@@ -46,19 +48,17 @@ void ListGraph::print() {
 }
 // dodanie nowej krawedzi do grafu
 void ListGraph::addEdge(int a, int b, int w) {
-    ListEdge *edge = new ListEdge;
-    edge->destination = b;
-    edge->weight = w;
-    edge->next = list[a];
-    list[a] = edge;
+    ListEdge* e = new ListEdge{b, w, list[a]};
+    list[a] = e;
     if (graph_type == UNDIRECTED) {
-        ListEdge *reverse_edge = new ListEdge;
-        reverse_edge->destination = a;
-        reverse_edge->weight = w;
-        reverse_edge->next = list[b];
-        list[b] = reverse_edge;
+        ListEdge* r = new ListEdge{a, w, list[b]};
+        list[b] = r;
+        if (a < b) ++edges_count;
+    } else {
+        ++edges_count;
     }
 }
+
 // usuwanie wybranej krawedzi
 void ListGraph::removeEdge(int a, int b) {
     ListEdge *current_edge = list[a];
@@ -95,27 +95,20 @@ void ListGraph::removeEdge(int a, int b) {
         }
     }
 }
-Edge* ListGraph::getEdges(int &edgeCount) const {
-    edgeCount = 0;
-    Edge* edgeTab = new Edge[vertices_count*vertices_count];
-    for (int i = 0; i < vertices_count; i++) {
-        ListEdge *current_edge = list[i];
-        while (current_edge != nullptr) {
-            if (graph_type == UNDIRECTED && current_edge->destination > i) {
-                edgeTab[edgeCount] = {i, current_edge->destination, current_edge->weight};
-                edgeCount++;
-            }
-            else if (graph_type == DIRECTED) {
-                edgeTab[edgeCount] = {i, current_edge->destination, current_edge->weight};
-                edgeCount++;
-            }
-            current_edge = current_edge->next;
+Edge* ListGraph::getEdges(int& edgeCnt) const {
+    edgeCnt = edges_count;
+    Edge* tab = new Edge[edgeCnt];
+    int p = 0;
 
+    for (int u = 0; u < vertices_count; ++u) {
+        for (ListEdge* e = list[u]; e; e = e->next) {
+            if (graph_type == DIRECTED || u < e->destination)
+                tab[p++] = {u, e->destination, e->weight};
         }
-
     }
-    return edgeTab;
+    return tab;
 }
+
 
 int ListGraph::getVerticesCount() const{
     return vertices_count;

@@ -8,7 +8,7 @@
 
 int* Dijkstra(const IGraph& graph, int startVertex)
 {
-    const int INF = INT_MAX / 4; // inf zabezpieczenie przy dodawaniu
+    const int INF = INT_MAX / 4;
     int vertexCount = graph.getVerticesCount();
 
     int* dist = new int[vertexCount];
@@ -18,46 +18,35 @@ int* Dijkstra(const IGraph& graph, int startVertex)
     // inicjalizacja odleglosci domyslnie wszystkie inf
     for (i = 0; i < vertexCount; i++) {
         dist[i] = INF;
-    }
-    // inicjalizacja stanu przetworzenia wierzcholkow domyslnie false
-    for (i = 0; i < vertexCount; i++) {
         visited[i] = false;
     }
 
     dist[startVertex] = 0;
 
-    int roughCap = vertexCount * vertexCount;
-    MinHeap heap(roughCap);
+    MinHeap heap(vertexCount*2, vertexCount);
     heap.push(0, startVertex);
 
     // glowna petla algorytmu
     while (!heap.empty()) {
         HeapNode node = heap.popMin();
         int u = node.vertex;
-        // pomijanie juz odwiedzonych wierzcholkow
-        if (visited[u]) {
-            continue;
-        }
+        if (visited[u]) continue;
         visited[u] = true;
 
-        int neighbourCount;
-        Edge* neighbours = graph.getNeighbours(u, neighbourCount);
+        int n;
+        Edge* neighbors = graph.getNeighbours(u, n);
 
-        // relaksacja
-        for (int k = 0; k < neighbourCount; k++) {
-            int v = neighbours[k].destination;
-            int weight = neighbours[k].weight;
-
-            if (!visited[v]) {
-                // aktualizacja jesli znaleziono krotsza sciezke
-                if (dist[u] + weight < dist[v]) {
-                    dist[v] = dist[u] + weight;
-                    heap.push(dist[v], v);
-                }
+        for (int k = 0; k < n; ++k) {
+            int v = neighbors[k].destination;
+            int w = neighbors[k].weight;
+            if (!visited[v] && dist[u] + w < dist[v]) {
+                dist[v] = dist[u] + w;
+                heap.push(dist[v], v);
             }
         }
-        delete[] neighbours;
+        delete[] neighbors;
     }
+
 
     delete[] visited;
     return dist;

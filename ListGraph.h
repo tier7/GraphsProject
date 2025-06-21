@@ -30,6 +30,7 @@ private:
     };
     ListEdge** list;
     int vertices_count;
+    int edges_count;
     GraphType graph_type;
 };
 

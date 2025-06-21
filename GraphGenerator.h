@@ -79,7 +79,7 @@ inline void generateGraph(IGraph& graph, float d, int minWeight, int maxWeight, 
         }
     }
 
-    // tasowanie potecjalnych par
+    // losowanie potecjalnych par
     for (int i = pairsCount - 1; i > 0; --i) {
         int swapWith = rand() % (i + 1);
         std::swap(from[i],from[swapWith]);

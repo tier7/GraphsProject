@@ -115,27 +115,24 @@ int MatrixGraph::getWeight(int u, int v) const {
 
 Edge* MatrixGraph::getNeighbours(int u, int& n) const {
     n = 0;
-    for(int e = 0; e < edges_count; ++e) {
-        if ((graph_type == DIRECTED  && edgeFrom[e] == u) || (graph_type == UNDIRECTED && incidence[u][e] != 0)) {
-            n++;
-        }
-    }
-    Edge* r = new Edge[n];
-    int idx = 0;
-    for(int e = 0; e < edges_count; e++) {
+    Edge* results = new Edge[edges_count];
+
+    for (int e = 0; e < edges_count; e++) {
+        if (edgeFrom[e] == -1) continue;
         if (graph_type == DIRECTED) {
             if (edgeFrom[e] == u) {
-                r[idx] = {u, edgeTo[e], weights[e]};
-                idx++;
+                results[n] = {u, edgeTo[e], weights[e]};
+                n++;
+            }
+        } else {
+            if (incidence[u][e] != 0) {
+                int other = (edgeFrom[e] == u) ? edgeTo[e] : edgeFrom[e];
+                results[n] = {u, other, weights[e]};
+                n++;
             }
         }
-        else if (incidence[u][e] != 0) {
-            int other = (edgeFrom[e] == u) ? edgeTo[e] : edgeFrom[e];
-            r[idx] = {u, other, weights[e]};
-            idx++;
-        }
     }
-    return r;
+    return results;
 }
 
 
